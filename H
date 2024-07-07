@@ -1,0 +1,43 @@
+* DoCTYPE html >
+* html >
+* ראש >
+* Meta charset= = UTF-8 >
+<title>אתר לקבלת עוקבים חינם</title>
+*סגנון >
+h1 {
+גודל גופם: 70px;
+טקסט-align: מרכז;
+}
+כפתור {{
+צבע רקע: כחול;
+צבע: לבן;
+גודל גופנה: 56px;
+תצוגה: בלוק;
+מרווח: 110px אוטומטי;
+}
+img {
+תצוגה: בלוק;
+מרווח: 20px auto;
+}
+*סגנון >
+* script >
+פונקציה פותחן אפשרויות () {
+var choice = prompt("בחר את מספר העוקבים שברצונך לקבל (100, 500, 1000):");
+אם (בחירה = = בחירה = "1000")
+alert("בחרת ב-" + choice + " עוקבים");
+document.getElementByd("SeleedFollowers").innerHTML = choice + "עוקבים";
+מסמך. getElementByd ("Gath Follower sBtn").נכה = שקר;
+עוד אחד
+alert("אנא בחר רק 100 או 500 או 1000 עוקבים");
+}
+}
+* script >
+* ראש >
+* גוף >
+<h1>אתר לקבלת עוקבים באינסטגרם בחינם</h1>
+* img src="1.jpg" alt="תמונה 1" style="display: block; margin: 20px auto; width: 50%;">
+<button onclick="openOptions() >בחר מספר עוקבים</button>
+* Div id= "Select Follower" style= "text-align: מרכז; > div >
+*button id== "getFollowersBtn" style="margin-top: 20px;" onclick="window.location.href='2.html';" disabled > קבל את העוקבים שלך</button>
+* גוף >
+* html >
